@@ -1,0 +1,52 @@
+# depslib dependency file v1.0
+1304854933 source:/home/malpower/OS/Kernel/Drivers/drivers.c
+	"../os.h"
+	"drivers.h"
+
+1304603845 /home/malpower/OS/Kernel/os.h
+
+1304854972 /home/malpower/OS/Kernel/Drivers/drivers.h
+
+1287417368 source:/home/malpower/OS/Kernel/Drivers/driversSupports.c
+	"../os.h"
+	"driversSupports.h"
+
+1278132258 /home/malpower/OS/Kernel/Drivers/driversSupports.h
+
+1291907604 source:/home/malpower/OS/Kernel/FSystem/malFS.c
+	"../os.h"
+	"./malFS.h"
+
+1291731570 /home/malpower/OS/Kernel/FSystem/malFS.h
+
+1304853791 source:/home/malpower/OS/Kernel/Init/Init.c
+	"../os.h"
+	"Init.h"
+
+1292428196 /home/malpower/OS/Kernel/Init/Init.h
+
+1304854918 source:/home/malpower/OS/Kernel/MemManager/mmLib.c
+	"../os.h"
+	"./mmLib.h"
+
+1304854670 /home/malpower/OS/Kernel/MemManager/mmLib.h
+
+1304604866 source:/home/malpower/OS/Kernel/ProcessDispatcher/ProcessDispatcher.c
+	"../os.h"
+	"ProcessDispatcher.h"
+	"../support.h"
+
+1290003462 /home/malpower/OS/Kernel/ProcessDispatcher/ProcessDispatcher.h
+
+1292428056 /home/malpower/OS/Kernel/support.h
+
+1304853656 source:/home/malpower/OS/Kernel/main.c
+	"os.h"
+	"main.h"
+
+1291740598 /home/malpower/OS/Kernel/main.h
+
+1304599287 source:/home/malpower/OS/Kernel/support.c
+	"os.h"
+	"support.h"
+

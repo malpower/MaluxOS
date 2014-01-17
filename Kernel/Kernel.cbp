@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Kernel" />
+		<Option makefile_is_custom="1" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Kernel" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-march=i586" />
+					<Add option="-O3" />
+					<Add option="-Wshadow" />
+					<Add option="-Winit-self" />
+					<Add option="-Wredundant-decls" />
+					<Add option="-Wcast-align" />
+					<Add option="-Wundef" />
+					<Add option="-Wfloat-equal" />
+					<Add option="-Winline" />
+					<Add option="-Wunreachable-code" />
+					<Add option="-Wmissing-declarations" />
+					<Add option="-Wmissing-include-dirs" />
+					<Add option="-Wswitch-enum" />
+					<Add option="-Wswitch-default" />
+					<Add option="-Wall" />
+				</Compiler>
+				<Linker>
+					<Add option="--oformat binary -Ttext 0 -e main" />
+				</Linker>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Kernel" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="Drivers/drivers.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Drivers/drivers.h" />
+		<Unit filename="Drivers/driversLib.asm" />
+		<Unit filename="Drivers/driversSupports.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Drivers/driversSupports.h" />
+		<Unit filename="FSystem/malFS.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="FSystem/malFS.h" />
+		<Unit filename="Init/Init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Init/Init.h" />
+		<Unit filename="Init/InitLib.asm" />
+		<Unit filename="Interruptions/ints.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Interruptions/ints.h" />
+		<Unit filename="Interruptions/list.asm" />
+		<Unit filename="MemManager/mmLib.asm" />
+		<Unit filename="MemManager/mmLib.h" />
+		<Unit filename="MemManager/mmLib_C.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ProcessDispatcher/ProcessDispatcher.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="ProcessDispatcher/ProcessDispatcher.h" />
+		<Unit filename="ProcessDispatcher/ProcessDispatcherLib.asm" />
+		<Unit filename="lib.asm" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="main.h" />
+		<Unit filename="os.h" />
+		<Unit filename="support.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="support.h" />
+		<Unit filename="sysCalls/sysCalls.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sysCalls/sysCalls.h" />
+		<Unit filename="sysCalls/sysCallsLib.asm" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

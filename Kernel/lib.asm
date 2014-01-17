@@ -1,0 +1,394 @@
+[bits 32]
+global PrintA
+global PortOut
+global PortIn
+global GetMemSize
+global GetInUI
+global NP
+global KRNL_HD_WriteSector
+global KRNL_HD_ReadSector
+global GetPWNumber
+global WriteToRealMem
+global ReadFromRealMem
+global CreateProcess
+global X_TEST
+global newPID
+global Wbrm
+global GT
+global Rbrm
+extern Cls
+extern dRwAddress
+extern dRwSwitch
+extern Driver_HD_WriteSector
+extern GetFreePCB
+extern PrintNumberAsHex
+extern CreateCr3
+extern MallocAPage
+[section .text]
+X_TEST:
+    mov ax,128
+    mov ds,ax
+    mov byte[0],'a'
+	ret
+newPID:
+	dd 0x0100
+PrintA:																					;;Print a charactor.foudation of PrintNumberAsHes(),PrintString().
+	push ebp
+	mov ebp,esp
+	push eax
+	push ebx
+	push ecx
+	push gs
+	mov ecx,dword[ebp+12]
+	mov bl,byte[ebp+8]
+	mov eax,ecx
+	mov ecx,2
+	mul ecx
+	mov ecx,eax
+	mov ax,11
+	mov gs,ax
+	mov ah,0x0F
+	mov al,bl
+	mov [gs:ecx],ax
+	pop gs
+	pop ecx
+	pop ebx
+	pop eax
+	pop ebp
+	ret
+PortOut:																					;;output a byte to I/O ports.
+	push ebp
+	mov ebp,esp
+	push eax
+	push ebx
+	push ecx
+	push edx
+	mov edx,dword[ebp+12]
+	mov eax,dword[ebp+8]
+	out dx,al
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
+	pop ebp
+	ret
+PortIn:																						;;read a byte from I/O ports.
+	push ebp
+	mov ebp,esp
+	push ebx
+	push ecx
+	push edx
+	xor eax,eax
+	mov edx,dword[ebp+8]
+	in al,dx
+	pop edx
+	pop ecx
+	pop ebx
+	pop ebp
+	ret
+GetMemSize:																									;;read memory size which read with int 0x88
+	xor eax,eax
+	mov ebx,0x7FF0
+	mov ax,word[ds:ebx]
+	ret
+GetPWNumber:
+	xor eax,eax
+	mov ebx,0x7FFA
+	mov ax,word[ds:ebx]
+	ret
+TempUI:
+	int 0x80
+	mov dx,0x3D4
+	mov al,0x0E
+	out dx,al
+	mov dx,0x3D5
+	mov al,10
+	out dx,al
+	mov dx,0x3D4
+	mov al,0x0F
+	out dx,al
+	mov dx,0x3D5
+	mov al,255
+	out dx,al
+	jmp $
+	mov ax,8
+	mov gs,ax
+   .bol_TempUI:
+	inc byte[gs:0]
+	jmp .bol_TempUI
+	times 256 db 0
+GetInUI:																										;;Jump into UI
+	mov ax,56
+	mov es,ax
+	mov ebx,0
+	mov eax,TempUI
+	shl eax,16
+	add eax,0x00000FFF
+	mov dword[es:ebx],eax
+	mov ebx,4
+	mov eax,0x0040F801
+	mov dword[es:ebx],eax
+	mov ebx,8
+	mov eax,TempUI
+	shl eax,16
+	add eax,0xFF
+	mov dword[es:ebx],eax
+	mov ebx,12
+	mov eax,0x0040F208
+	mov dword[es:ebx],eax
+	mov ax,80
+	lldt ax
+	mov eax,15
+	push eax
+	mov eax,0xC0
+	push eax
+	mov eax,0x7
+	push eax
+	mov eax,0
+	push eax
+	retf
+CreateProcess:																										;;function CreateProcess,To create a new process with real address.
+	push ebp
+	mov ebp,esp
+	push eax
+	push ebx
+	push ecx
+	push edx
+	push es
+	push ds
+	mov ax,56
+	mov es,ax
+	mov ax,24
+	mov ds,ax
+	mov ebx,dword[ebp+8]
+	mov eax,0x00400000
+	shl eax,16
+	mov edi,dword[ebp+16]
+	add eax,edi
+	mov dword[es:ebx],eax
+	add ebx,4
+	mov eax,0x00400000
+	shl eax,8
+	shr eax,8
+	shr eax,16
+	add eax,0x00C0F800
+	mov dword[es:ebx],eax
+	add ebx,4
+	mov eax,0x00400000
+	shl eax,16
+	add eax,dword[ebp+16]
+	mov dword[es:ebx],eax
+	add ebx,4
+	mov eax,0x00400000
+	shl eax,8
+	shr eax,8
+	shr eax,16
+	add eax,0x00C0F200
+	mov dword[es:ebx],eax
+	mov ax,24
+	mov es,ax
+	mov ds,ax
+	xor eax,eax
+	call GetFreePCB
+	mov ebx,eax
+	mov eax,0
+	mov dword[es:ebx],eax
+	mov eax,7
+	mov dword[es:ebx+4],eax
+	mov eax,0x206
+	mov dword[es:ebx+8],eax
+	mov eax,dword[ebp+16]
+	mov dword[es:ebx+12],eax
+	mov eax,15
+	mov dword[es:ebx+16],eax
+	mov dword[es:ebx+40],eax
+	mov eax,dword[ebp+8]
+	push edx
+	mov edx,0
+	mov ecx,0x100
+	div ecx
+	mov ecx,8
+	mul ecx
+	pop edx
+	add eax,80
+	mov dword[es:ebx+64],eax
+	mov eax,dword[ebp+12]
+	push eax
+	call CreateCr3
+	mov dword[es:ebx+84],eax
+	pop eax
+	mov eax,1
+	mov dword[es:ebx+104],eax
+	mov eax,1
+	mov dword[es:ebx+68],eax
+	mov eax,ebx
+	mov edx,0x00008100
+	sub eax,0x00008100
+	shr eax,8
+	mov ecx,eax
+	mov eax,dword[es:edx+76]
+	mov dword[es:edx+76],ecx
+	mov dword[es:ebx+76],eax
+	mov eax,dword[newPID]
+	mov [es:ebx+80],eax
+	inc eax
+	mov dword[newPID],eax
+	call MallocAPage
+	mov dword[es:ebx+88],eax
+	mov eax,0
+	mov dword[es:ebx+92],eax
+	pop ds
+	pop es
+	pop edx
+	pop ecx
+	pop ebx
+	pop eax
+	pop ebp
+	ret
+KRNL_HD_ReadSector:																								;;a function for read a sector from HD use.
+	cli
+	push ebp
+	mov ebp,esp
+	push eax
+	push edx
+	push ds
+	mov ax,24
+	mov ds,ax
+	mov eax,[ebp+20]
+	mov dword[dRwAddress],eax
+	mov al,0
+	mov byte[dRwSwitch],al
+	mov ax,0x1F2
+	mov dx,ax
+	mov al,1
+	out dx,al
+	inc dx
+	mov al,byte[ebp+8]
+	out dx,al
+	inc dx
+	mov al,byte[ebp+12]
+	out dx,al
+	inc dx
+	mov al,byte[ebp+13]
+	out dx,al
+	mov al,0xA0
+	add al,byte[ebp+16]
+	inc dx
+	out dx,al
+	inc dx
+	mov al,0x20
+	out dx,al
+	pop ds
+	pop edx
+	pop eax
+	pop ebp
+	sti
+	ret
+KRNL_HD_WriteSector:																				;;write a sector to hd
+	cli
+	push ebp
+	mov ebp,esp
+	push eax
+	push edx
+	push ds
+	mov ax,24
+	mov ds,ax
+	mov eax,dword[ebp+20]
+	mov dword[dRwAddress],eax
+	mov al,1
+	mov byte[dRwSwitch],al
+	mov ax,0x1F2
+	mov dx,ax
+	mov al,1
+	out dx,al
+	inc dx
+	mov al,byte[ebp+8]
+	out dx,al
+	inc dx
+	mov al,byte[ebp+12]
+	out dx,al
+	inc dx
+	mov al,byte[ebp+13]
+	out dx,al
+	mov al,0xA0
+	add al,byte[ebp+16]
+	inc dx
+	out dx,al
+	mov dx,0x1F7
+	mov al,0x30
+	out dx,al
+	mov dx,0x1F7
+   .bol_KRNL_HD_WriteSector_1:
+	in al,dx
+	cmp al,0x58
+	jne .bol_KRNL_HD_WriteSector_1
+	call Driver_HD_WriteSector
+	pop ds
+	pop edx
+	pop eax
+	pop ebp
+	sti
+	ret
+WriteToRealMem:																				;;write a Dword into real memory.
+	push ebp
+	mov ebp,esp
+	push eax
+	push ebx
+	push es
+	mov eax,dword[ebp+8]
+	mov ebx,eax
+	mov ax,64
+	mov es,ax
+	mov eax,dword[ebp+12]
+	mov dword[es:ebx],eax
+	pop es
+	pop ebx
+	pop eax
+	pop ebp
+	ret
+ReadFromRealMem:
+	push ebp
+	mov ebp,esp
+	push ebx
+	push es
+	mov eax,dword[ebp+8]
+	mov ebx,eax
+	mov ax,64
+	mov es,ax
+	mov eax,dword[es:ebx]
+	pop es
+	pop ebx
+	pop ebp
+	ret
+Rbrm:
+	push ebp
+	mov ebp,esp
+	push ebx
+	push es
+	mov eax,dword[ebp+8]
+	mov ebx,eax
+	mov ax,64
+	mov es,ax
+	xor eax,eax
+	mov al,byte[es:ebx]
+	pop es
+	pop ebx
+	pop ebp
+	ret
+Wbrm:
+	push ebp
+	mov ebp,esp
+	push eax
+	push ebx
+	push es
+	mov eax,dword[ebp+8]
+	mov ebx,eax
+	mov ax,64
+	mov es,ax
+	mov eax,dword[ebp+12]
+	mov byte[es:ebx],al
+	pop es
+	pop ebx
+	pop eax
+	pop ebp
+	ret

@@ -1,0 +1,133 @@
+
+#define MLX_API __attribute__((cdecl))
+#define LINE(x) (x<<16)
+#define POS(y,x) ((x<<16)+y)
+typedef unsigned int DWORD;
+
+typedef struct
+{
+	DWORD msg;
+	DWORD param;
+}MSG;
+
+
+typedef struct
+{
+	char name[28];
+	DWORD unused;
+	DWORD type;
+	DWORD properties;
+	DWORD access;
+	DWORD size;
+}*FILE;
+
+typedef struct
+{
+	DWORD x;
+	DWORD y;
+	DWORD width;
+	DWORD height;
+	DWORD bgColor;
+	char *title;
+	DWORD check;
+	DWORD tColor;
+	struct
+	{
+		DWORD type;
+		DWORD *addr;
+	} children[100];
+}WND;
+
+typedef struct
+{
+	DWORD x;
+	DWORD y;
+	DWORD width;
+	DWORD height;
+	char *value;
+	DWORD check;
+	WND *parent;
+}BTN;
+
+typedef struct {
+	short LocX;
+	short LocY;
+	short LocZ;
+	short LocA;
+
+	char Flags;
+} MouseParms;
+
+#define INVALID_FILE 0
+
+// Output Library
+extern void MLX_API MLX_PrintNumberAsHex(DWORD,DWORD,DWORD,DWORD);
+extern void MLX_API MLX_PrintNumber(DWORD,DWORD,DWORD,DWORD);
+extern void MLX_API MLX_PrintString(char*,int,DWORD,DWORD);
+
+// Screen Access Library
+extern void MLX_API MLX_DrawRect(DWORD,DWORD,DWORD,DWORD,DWORD);
+extern void MLX_API MLX_ClearScreen(DWORD,DWORD,DWORD,DWORD);
+extern void MLX_API MLX_PrintChar(char,int,DWORD,DWORD);
+
+/***************************************************************************************/
+
+// Input Library
+extern MouseParms* MLX_API MLX_GetMouse();
+extern int MLX_API MLX_ReadKeyBuff();
+
+
+extern void MLX_API MLX_GetInput(char*,DWORD,int,DWORD,DWORD);
+
+// Multitasking Library
+extern void MLX_API MLX_CreateThread(void(*),DWORD);
+extern int MLX_API MLX_Execute(char*);
+extern void MLX_API MLX_Pause();
+extern void MLX_API MLX_GiveUp();
+extern int MLX_API MLX_WaitProcess(int);
+
+// HAL Library
+extern char MLX_API MLX_PortIn(int);
+extern void MLX_API MLX_PortOut(char,int);
+extern void MLX_API MLX_Shutdown();
+
+// Memory Management Library
+extern void MLX_API *MLX_MAlloc();
+extern void MLX_API MLX_MFree(void*);
+
+// Abstract/other
+extern int MLX_API MLX_StrCmp(const char*,const char*);
+extern DWORD MLX_API MLX_ToDword(char*);
+
+// File Management Library
+extern char MLX_API *MLX_ListFile();
+extern int MLX_API MLX_CreateFile(const char*,DWORD);
+extern int MLX_API MLX_DeleteFile(const char*);
+extern FILE MLX_API MLX_OpenFile(const char*);
+extern void MLX_API MLX_CloseFile(FILE);
+extern DWORD MLX_API MLX_ReadFile(FILE,void*,DWORD,DWORD);
+extern DWORD MLX_API MLX_WriteFile(FILE,void*,DWORD,DWORD);
+
+// Interprocess Communication Library
+extern void MLX_API MLX_SendMessage(DWORD,DWORD,DWORD);
+extern int MLX_API MLX_GetMessage(MSG*);
+
+// Windowing Library
+extern void MLX_API MLX_CreateWindow(WND*,DWORD,DWORD,DWORD,DWORD,DWORD,char*);
+extern void MLX_API MLX_ShowWindow(WND*);
+extern void MLX_API MLX_HideWindow(WND*);
+extern void MLX_API MLX_LightWindow(WND*);
+extern void MLX_API MLX_DarkWindow(WND*);
+extern void MLX_API MLX_CreateButton(BTN*,DWORD,DWORD,DWORD,DWORD,char*,WND*);
+extern void MLX_API MLX_TextOut(WND*,DWORD,DWORD,char*,DWORD);
+extern void MLX_API MLX_NumberOut(WND*,DWORD,DWORD,DWORD,DWORD);
+
+
+/*-------------------------Message defines--------------------------------------*/
+
+#define MM_QUIT      0xFFFFFFFF
+#define MM_NONE      0x00000000
+#define MM_KEYDOWN   0x00000010
+#define MM_PAINT     0x00000020
+#define MM_SETFOCUS  0x00000030
+#define MM_KILLFOCUS 0x00000031
