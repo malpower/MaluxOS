@@ -8,7 +8,7 @@ The project was originally uploaded in 2014 and is primarily a learning/experime
 - **Architecture:** x86, 32-bit protected mode, ring 0/ring 3
 - **Graphics:** VBE mode `0x118` (1024 × 768 × 24 bpp)
 - **Filesystem:** malFS (custom, sector-based)
-- **Author:** michael lou `<malpower@ymail.com>`
+- **Author:** Thrasky Louh `<malpower@ymail.com>`
 - **Repository:** <https://github.com/malpower/MaluxOS>
 
 ---
@@ -452,6 +452,6 @@ GPL-2.0) so that others can study, use and redistribute the project.
 
 ## Credits
 
-- Author: michael lou `<malpower@ymail.com>`
+- Author: Thrasky Louh `<malpower@ymail.com>`
 - Original repository: <https://github.com/malpower/MaluxOS>
 - Initial commit: 2014-01-17
