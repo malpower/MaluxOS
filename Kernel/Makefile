@@ -1,6 +1,8 @@
+IMG ?= ../malux005.img
+
 Debug: kernel
 	@echo Writing hard disk image:
-	@fwriter ../../IMG/malux005.img ./kernel 1 64
+	@dd if=./kernel of=$(IMG) bs=512 seek=1 count=64 conv=notrunc status=none
 	@echo Buiding finished............
 kernel:main.o support.o lib.o Init/Init.o Init/InitLib.o Interruptions/ints.o ProcessDispatcher/ProcessDispatcher.o ProcessDispatcher/ProcessDispatcherLib.o Interruptions/list.o sysCalls/sysCallsLib.o sysCalls/sysCalls.o Drivers/drivers.o Drivers/driversSupports.o Drivers/driversLib.o MemManager/mmLib.o FSystem/malFS.o MemManager/mmLib_C.o
 	@echo linking obj files

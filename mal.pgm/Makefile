@@ -1,5 +1,7 @@
+IMG ?= ../malux005.img
+
 Debug: mal.pgm
-	@fwriter ../../IMG/malux005.img mal.pgm 119 10
+	@dd if=mal.pgm of=$(IMG) bs=512 seek=119 count=10 conv=notrunc status=none
 mal.pgm: ASM.o C.o main.o
 	ld -e MLX_Start -Ttext 0 -Tbss 0x00000B00 --oformat binary ASM.o main.o C.o -o mal.pgm
 ASM.o: lib.asm

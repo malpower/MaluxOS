@@ -1,5 +1,7 @@
+IMG ?= ../malux005.img
+
 Debug: EUI
-	@fwriter ../../IMG/malux005.img EUI 100 19
+	@dd if=EUI of=$(IMG) bs=512 seek=100 count=19 conv=notrunc status=none
 EUI: ASM.o C.o main.o
 	@ld -e MLX_Start -Ttext 0 -Tbss 0x00001E00 --oformat binary ASM.o main.o C.o -o EUI
 ASM.o: lib.asm

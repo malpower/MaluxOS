@@ -148,7 +148,7 @@ MaluxOS/
 │   ├── Drivers/            # Keyboard, ATA, mouse scaffolding
 │   ├── MemManager/         # Page bitmap allocator and page mapping
 │   ├── FSystem/            # malFS implementation
-│   ├── Makefile            # Legacy build (i386 GCC + NASM + fwriter)
+│   ├── Makefile            # Build (i386 GCC + NASM + dd)
 │   └── kernel              # Prebuilt flat kernel binary
 ├── Shell/                  # BUI.SYS (graphical shell + window manager)
 │   ├── main.c
@@ -173,24 +173,22 @@ ELF32 i386 / raw flat binaries produced by the original toolchain.
 
 ### Historical toolchain (2014)
 
-The original makefiles assume:
+The makefiles assume:
 
 - a native **i386** GCC toolchain (`gcc` / `ld` defaulting to 32-bit x86)
 - **NASM** (`nasm -f elf`)
-- a custom image tool named **`fwriter`** (not included in this repository)
-- an existing image at `../../IMG/malux005.img`
+- the image at `../malux005.img` (override with
+  `make IMG=/path/to/malux005.img`)
 
-`fwriter` is used as:
-
-```sh
-fwriter <image> <file> <lba> <sector-count>
-```
-
-The equivalent with standard tools is:
+The original 2014 build used a custom `fwriter` tool. It has been replaced with
+standard `dd`:
 
 ```sh
 dd if=<file> of=<image> bs=512 seek=<lba> count=<sectors> conv=notrunc
 ```
+
+`status=none` is a GNU coreutils extension; on other systems, drop it or redirect
+`dd`'s output.
 
 The historical build order is roughly:
 
@@ -205,13 +203,15 @@ cd ../mal.pgm && make   # build and write mal.pgm to LBA 119
 
 ### Modern hosts (recommended direction)
 
-The in-tree makefiles **do not work as-is** on modern x86-64 or ARM64 hosts:
+The in-tree makefiles **do not fully work as-is** on modern x86-64 or ARM64
+hosts:
 
 - Bare `gcc` produces 64-bit (x86-64) or AArch64 objects, while NASM produces
   ELF32 i386 objects.
 - There is no `-m32`, `-m elf_i386`, `-ffreestanding`, `-fno-pie` or
   `-fno-pic` in the makefiles.
-- `fwriter` is missing and the `../../IMG/` path is not present in this repo.
+
+Image writes already use `dd`; make sure `../malux005.img` exists.
 
 A modern build needs, at minimum:
 
@@ -223,7 +223,6 @@ A modern build needs, at minimum:
 - `ld -m elf_i386 -z noseparate-code --oformat binary -Ttext 0`
 - A linker script or explicit entry stub to guarantee the kernel entry point is
   at offset 0 (`-e main` is meaningless for `--oformat binary`)
-- `dd conv=notrunc` instead of `fwriter`
 
 On Debian/Ubuntu these packages are:
 
@@ -397,9 +396,8 @@ int MlxMain(void)
 
 - Requires a 32-bit x86 toolchain; the makefiles use bare `gcc`/`ld` with no
   `-m32` or `-m elf_i386`.
-- Depends on the custom `fwriter` tool, which is not in the repository.
-- Image paths point at `../../IMG/malux005.img`, which is not the location of
-  the committed image.
+- The makefiles write to `../malux005.img`; ensure the image exists, or override
+  the path with `make IMG=/path/to/malux005.img`.
 - Prebuilt `.o` files and binaries are committed; there is no `clean` target.
 
 **Boot / runtime**

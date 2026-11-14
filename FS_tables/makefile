@@ -1,8 +1,10 @@
+IMG ?= ../malux005.img
+
 Clear: FDT FCDT SAT
 	@echo now makefile is going to write files.
-	@fwriter ../../IMG/malux005.img FDT 95 1
-	@fwriter ../../IMG/malux005.img FCDT 99 1
-	@fwriter ../../IMG/malux005.img SAT 189 1
+	@dd if=FDT of=$(IMG) bs=512 seek=95 count=1 conv=notrunc status=none
+	@dd if=FCDT of=$(IMG) bs=512 seek=99 count=1 conv=notrunc status=none
+	@dd if=SAT of=$(IMG) bs=512 seek=189 count=1 conv=notrunc status=none
 	@echo All clear
 FDT: FDT.asm
 	@nasm FDT.asm -f bin -o FDT
